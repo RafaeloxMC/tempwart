@@ -1,3 +1,5 @@
+import { readFileSync } from "fs";
+
 interface IAccountAlias {
 	enabled: boolean;
 	name: string;
@@ -80,10 +82,12 @@ async function select_account_id(ids: string[]) {
 	return selectedAccountId;
 }
 
+var creds = JSON.parse(readFileSync("./credentials.json", "utf8"));
+
 let domainId = "";
 let accountId = "";
-let rootDomain = "";
-let authToken = "";
+let rootDomain = creds.host;
+let authToken = creds.api_key;
 let userAgent = "TempWart Fetching";
 let aliasAmount = 2;
 
