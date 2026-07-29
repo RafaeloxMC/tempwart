@@ -29,6 +29,7 @@ function select() {
 	console.log("Submitting ID:", id, "-", dropdownSelected);
 	setStalwartCurrentEmail(dropdownSelected);
 	setStalwartCurrentEmailId(id);
+	window.location.href = "/popup/index.html";
 }
 
 async function fetch_account_id() {

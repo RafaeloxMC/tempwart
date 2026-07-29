@@ -1,9 +1,12 @@
-import { getStalwartApiUrl } from "./scripts/util.js";
+import { getStalwartApiUrl, getStalwartCurrentEmail } from "./scripts/util.js";
 
 async function renderLoadedBanner() {
 	const banner = document.createElement("div");
 	banner.textContent =
-		"TempWart TypeScript loaded. Server URL: " + getStalwartApiUrl();
+		"TempWart TypeScript loaded. Server " +
+		getStalwartApiUrl() +
+		" as " +
+		getStalwartCurrentEmail();
 	document.body.appendChild(banner);
 	console.log("Popup script loaded");
 }

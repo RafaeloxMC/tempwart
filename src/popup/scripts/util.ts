@@ -22,12 +22,24 @@ export function getStalwartApiKey(): string {
 
 export function getStalwartCurrentEmail(): string {
 	const stalwartCurrentEmail = localStorage.getItem("STALWART_EMAIL");
-	return stalwartCurrentEmail ?? "N/A";
+	if (stalwartCurrentEmail != null && stalwartCurrentEmail != "") {
+		return stalwartCurrentEmail ?? "";
+	} else {
+		window.location.href = "/popup/pages/onboarding/account/index.html";
+		console.log("Stalwart email not selected. Redirecting to onboarding.");
+		return "";
+	}
 }
 
 export function getStalwartCurrentEmailId(): string {
 	const stalwartCurrentEmailId = localStorage.getItem("STALWART_EMAIL_ID");
-	return stalwartCurrentEmailId ?? "N/A";
+	if (stalwartCurrentEmailId != null && stalwartCurrentEmailId != "") {
+		return stalwartCurrentEmailId ?? "";
+	} else {
+		window.location.href = "/popup/pages/onboarding/account/index.html";
+		console.log("Stalwart email id not found. Redirecting to onboarding.");
+		return "";
+	}
 }
 
 export function setStalwartCurrentEmail(email: string): void {

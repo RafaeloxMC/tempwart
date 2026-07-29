@@ -16,7 +16,7 @@ function finalizeInputs() {
 	console.log("Setting Server URL:", serverUrlInput.value);
 	localStorage.setItem("STALWART_API_URL", serverUrlInput.value);
 	localStorage.setItem("STALWART_API_KEY", apiKeyInput.value);
-	window.location.href = "/popup/index.html";
+	window.location.href = "/popup/pages/onboarding/account/index.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
