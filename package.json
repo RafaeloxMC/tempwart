@@ -4,17 +4,17 @@
 	"devDependencies": {
 		"@types/bun": "^1.3.14",
 		"@types/node": "^26.1.1",
-		"tsc": "^2.0.4"
-	},
-	"peerDependencies": {
-		"typescript": "^7.0.2"
+		"typescript": "^5.8.3"
 	},
 	"dependencies": {
-		"node": "^26.5.0",
 		"web-ext": "^10.5.0"
 	},
 	"scripts": {
-		"lint": "cd ./src && web-ext lint",
-		"dev": "cd ./src && web-ext run"
+		"typecheck": "bunx tsc -p tsconfig.json --noEmit",
+		"build": "bunx tsc -p tsconfig.build.json && bun scripts/copy-static.mjs",
+		"watch:ts": "bunx tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"watch:static": "bun scripts/copy-static.mjs --watch",
+		"watch:webext": "web-ext run --source-dir src",
+		"dev": "bun scripts/dev.mjs"
 	}
 }

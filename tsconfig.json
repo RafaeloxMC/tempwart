@@ -28,5 +28,7 @@
 
 		// Types
 		"types": ["node"]
-	}
+	},
+	"include": ["requests.ts", "src/**/*"],
+	"exclude": ["dist", "node_modules"]
 }
