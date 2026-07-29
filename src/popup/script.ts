@@ -3,13 +3,16 @@ function getStalwartAPIURL(): string {
 	if (stalwartApiUrl != null && stalwartApiUrl != "") {
 		return stalwartApiUrl ?? "";
 	} else {
-		throw "Stalwart API route not set.";
+		window.location.href = "/popup/pages/onboarding/index.html";
+		console.log("Stalwart API route not set. Redirecting to onboarding.");
+		return "";
 	}
 }
 
 async function renderLoadedBanner() {
 	const banner = document.createElement("div");
-	banner.textContent = "TempWart TypeScript loaded";
+	banner.textContent =
+		"TempWart TypeScript loaded. Server URL: " + getStalwartAPIURL();
 	document.body.appendChild(banner);
 	console.log("Popup script loaded");
 }

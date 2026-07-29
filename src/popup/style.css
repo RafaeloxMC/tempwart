@@ -1,4 +1,7 @@
 body {
 	width: 360px;
 	height: 620px;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
