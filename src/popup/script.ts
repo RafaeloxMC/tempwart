@@ -1,18 +1,9 @@
-function getStalwartAPIURL(): string {
-	const stalwartApiUrl = localStorage.getItem("STALWART_API_URL");
-	if (stalwartApiUrl != null && stalwartApiUrl != "") {
-		return stalwartApiUrl ?? "";
-	} else {
-		window.location.href = "/popup/pages/onboarding/index.html";
-		console.log("Stalwart API route not set. Redirecting to onboarding.");
-		return "";
-	}
-}
+import { getStalwartApiUrl } from "./scripts/util.js";
 
 async function renderLoadedBanner() {
 	const banner = document.createElement("div");
 	banner.textContent =
-		"TempWart TypeScript loaded. Server URL: " + getStalwartAPIURL();
+		"TempWart TypeScript loaded. Server URL: " + getStalwartApiUrl();
 	document.body.appendChild(banner);
 	console.log("Popup script loaded");
 }
