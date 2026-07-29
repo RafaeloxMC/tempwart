@@ -225,6 +225,7 @@ async function add_new() {
 								enabled: true,
 								name: "test",
 								domainId: domainId,
+								description: "Created by TempWart",
 							},
 						},
 					},
