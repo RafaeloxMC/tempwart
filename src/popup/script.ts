@@ -8,19 +8,19 @@ import {
 import type { IJmapResponse } from "./types.js";
 
 async function renderLoadedBanner() {
+	const rootDomain = await getStalwartApiUrl();
+	const email = await getStalwartCurrentEmail();
+
 	const banner = document.createElement("div");
-	banner.textContent =
-		"Server " + getStalwartApiUrl() + " as " + getStalwartCurrentEmail();
+	banner.textContent = "Server " + rootDomain + " as " + email;
 	document.body.appendChild(banner);
 	console.log("Popup script loaded");
-	await fetchExisting();
+	await fetchExisting(rootDomain, email);
 }
 
-async function fetchExisting() {
-	const rootDomain = getStalwartApiUrl();
-	const authToken = getStalwartApiKey();
-	const accountId = getStalwartCurrentEmailId();
-	const email = getStalwartCurrentEmail();
+async function fetchExisting(rootDomain: string, email: string) {
+	const authToken = await getStalwartApiKey();
+	const accountId = await getStalwartCurrentEmailId();
 
 	const body = {
 		using: [

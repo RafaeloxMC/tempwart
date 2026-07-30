@@ -1,4 +1,7 @@
-function finalizeInputs() {
+import { setStalwartApiKey, setStalwartApiUrl } from "../../scripts/util.js";
+
+async function finalizeInputs() {
+	console.log("Clicked");
 	const serverUrlInput = document.getElementById(
 		"server_url",
 	) as HTMLInputElement | null;
@@ -14,12 +17,12 @@ function finalizeInputs() {
 	}
 
 	console.log("Setting Server URL:", serverUrlInput.value);
-	localStorage.setItem("STALWART_API_URL", serverUrlInput.value);
-	localStorage.setItem("STALWART_API_KEY", apiKeyInput.value);
+	await setStalwartApiUrl(serverUrlInput.value);
+	await setStalwartApiKey(apiKeyInput.value);
 	window.location.href = "/popup/pages/onboarding/account/index.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 	const continueBtn = document.getElementById("continue_btn");
-	continueBtn?.addEventListener("click", finalizeInputs);
+	continueBtn?.addEventListener("click", async () => await finalizeInputs());
 });

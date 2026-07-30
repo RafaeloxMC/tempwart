@@ -10,14 +10,12 @@ import type {
 	IJmapSessionResponse,
 } from "../../../types.js";
 
-const rootDomain = getStalwartApiUrl();
-const authToken = getStalwartApiKey();
 let accountId = "";
 
 let ids: string[] = [];
 let emails: string[] = [];
 
-function select() {
+async function select() {
 	const dropdownSelected = (
 		document.getElementById("accounts") as HTMLSelectElement
 	).value;
@@ -27,12 +25,15 @@ function select() {
 	}
 
 	console.log("Submitting ID:", id, "-", dropdownSelected);
-	setStalwartCurrentEmail(dropdownSelected);
-	setStalwartCurrentEmailId(id);
+	await setStalwartCurrentEmail(dropdownSelected);
+	await setStalwartCurrentEmailId(id);
 	window.location.href = "/popup/index.html";
 }
 
 async function fetch_account_id() {
+	const rootDomain = await getStalwartApiUrl();
+	const authToken = await getStalwartApiKey();
+
 	const res = await fetch(`${rootDomain}/jmap/session`, {
 		credentials: "include",
 		headers: {
@@ -61,6 +62,9 @@ async function fetch_account_id() {
 
 async function fetch_all_accounts() {
 	if (!accountId) await fetch_account_id();
+
+	const rootDomain = await getStalwartApiUrl();
+	const authToken = await getStalwartApiKey();
 
 	const body = {
 		using: [
