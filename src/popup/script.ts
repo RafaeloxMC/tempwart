@@ -101,6 +101,15 @@ async function fetchExisting(rootDomain: string, email: string) {
 	}
 }
 
+function create() {
+	window.location.href = "/popup/pages/aliases/create/index.html";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+	const createBtn = document.getElementById("alias_create_btn");
+	createBtn?.addEventListener("click", create);
+});
+
 if (document.readyState === "loading") {
 	document.addEventListener("DOMContentLoaded", renderLoadedBanner, {
 		once: true,

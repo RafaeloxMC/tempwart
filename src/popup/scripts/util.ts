@@ -1,4 +1,13 @@
+import type {
+	IAccountFetchAllJmapResponse,
+	IJmapSessionResponse,
+} from "../types.js";
+import { userAgent } from "./constants.js";
 import { storage } from "./storage.js";
+
+let accountId = "";
+let ids: string[] = [];
+let emails: string[] = [];
 
 async function getStoredString(key: string): Promise<string | undefined> {
 	const result = await storage.get(key);
@@ -65,4 +74,118 @@ export async function setStalwartApiUrl(url: string): Promise<void> {
 
 export async function setStalwartApiKey(key: string): Promise<void> {
 	await storage.set({ STALWART_API_KEY: key });
+}
+
+export async function fetch_account_id(): Promise<string | null> {
+	const rootDomain = await getStalwartApiUrl();
+	const authToken = await getStalwartApiKey();
+
+	const res = await fetch(`${rootDomain}/jmap/session`, {
+		credentials: "include",
+		headers: {
+			"User-Agent": userAgent,
+			Accept: "*/*",
+			"Accept-Language": "en-US,en;q=0.9",
+			authorization: `Bearer ${authToken}`,
+			"Sec-GPC": "1",
+			"Sec-Fetch-Dest": "empty",
+			"Sec-Fetch-Mode": "cors",
+			"Sec-Fetch-Site": "same-origin",
+			Priority: "u=4",
+		},
+		referrer: `${rootDomain}/account/Management/x:Account/User`,
+		method: "GET",
+		mode: "cors",
+	});
+
+	const responseJson = (await res.json()) as IJmapSessionResponse;
+
+	console.log(responseJson);
+
+	return responseJson.primaryAccounts["urn:ietf:params:jmap:mail"];
+}
+
+export async function fetch_all_accounts(): Promise<string[]> {
+	if (!accountId) {
+		accountId = (await fetch_account_id()) ?? "";
+	}
+
+	const rootDomain = await getStalwartApiUrl();
+	const authToken = await getStalwartApiKey();
+
+	const body = {
+		using: [
+			"urn:ietf:params:jmap:core",
+			"urn:stalwart:jmap",
+			"urn:ietf:params:jmap:blob",
+			"urn:ietf:params:jmap:mail",
+			"urn:ietf:params:jmap:calendars",
+			"urn:ietf:params:jmap:contacts",
+			"urn:ietf:params:jmap:principals",
+			"urn:ietf:params:jmap:sieve",
+			"urn:ietf:params:jmap:vacationresponse",
+		],
+		methodCalls: [
+			[
+				"x:Account/query",
+				{
+					accountId: accountId,
+					filter: { "@type": "User" },
+					limit: 25,
+					position: 0,
+					calculateTotal: true,
+				},
+				"0",
+			],
+			[
+				"x:Account/get",
+				{
+					accountId: accountId,
+					"#ids": {
+						resultOf: "0",
+						name: "x:Account/query",
+						path: "/ids",
+					},
+					properties: [
+						"id",
+						"emailAddress",
+						"description",
+						"createdAt",
+					],
+				},
+				"1",
+			],
+		],
+	};
+
+	const res = await fetch(`${rootDomain}/jmap/`, {
+		credentials: "include",
+		headers: {
+			"User-Agent": userAgent,
+			Accept: "*/*",
+			"Accept-Language": "en-US,en;q=0.9",
+			authorization: `Bearer ${authToken}`,
+			"content-type": "application/json",
+			"Sec-GPC": "1",
+			"Sec-Fetch-Dest": "empty",
+			"Sec-Fetch-Mode": "cors",
+			"Sec-Fetch-Site": "same-origin",
+			Priority: "u=4",
+		},
+		referrer: `${rootDomain}/account/Management/x:Account/User`,
+		body: JSON.stringify(body),
+		method: "POST",
+		mode: "cors",
+	});
+
+	const responseJson = (await res.json()) as IAccountFetchAllJmapResponse;
+	ids = responseJson.methodResponses[0][1].ids;
+	emails = responseJson.methodResponses[1][1].list.map(
+		(item) => item.emailAddress,
+	);
+	return ids;
+}
+
+export function getFetchedAccountEmails(): string[] {
+	return emails;
 }
