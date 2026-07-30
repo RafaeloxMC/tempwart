@@ -2,7 +2,17 @@ import { spawn } from "node:child_process";
 
 const children = [
 	spawn("bun", ["scripts/copy-static.mjs", "--watch"], { stdio: "inherit" }),
-	spawn("bunx", ["tsc", "-p", "tsconfig.build.json", "--watch", "--preserveWatchOutput"], { stdio: "inherit" }),
+	spawn(
+		"bunx",
+		[
+			"tsc",
+			"-p",
+			"tsconfig.build.json",
+			"--watch",
+			"--preserveWatchOutput",
+		],
+		{ stdio: "inherit" },
+	),
 	spawn("web-ext", ["run", "--source-dir", "dist"], { stdio: "inherit" }),
 ];
 
