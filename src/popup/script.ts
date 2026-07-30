@@ -82,11 +82,18 @@ async function fetchExisting(rootDomain: string, email: string) {
 	);
 	console.log(responseBody.methodResponses[0][1].list[0]?.aliases);
 
-	const aliases = responseBody.methodResponses[0][1].list[0]?.aliases;
+	const aliases = Object.values(
+		responseBody.methodResponses[0][1].list[0]?.aliases ?? {},
+	).filter((a) => a.description == "Created by TempWart");
 
 	const aliasesHTML = document.getElementById("aliases");
 
-	for (const alias of Object.values(aliases ?? {})) {
+	if (aliases.length == 0) {
+		if (aliasesHTML != null)
+			aliasesHTML.innerHTML = "<span>No aliases yet.</span>";
+	}
+
+	for (const alias of aliases) {
 		console.log(alias);
 
 		if (aliasesHTML != null)
