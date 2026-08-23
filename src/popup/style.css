@@ -5,3 +5,9 @@ body {
 	flex-direction: column;
 	gap: 1rem;
 }
+
+.hint {
+	font-size: small;
+	font-style: italic;
+	opacity: 50%;
+}
