@@ -9,9 +9,15 @@
 		<span>Enter a name below!</span>
 		<script type="module" src="script.js"></script>
 		<div>
-            <input type="text" placeholder="myemail" id="accounts"></input>
-            <span id="email_domain">@</span>
-        </div>
+			<input
+				type="text"
+				placeholder="myemail"
+				id="alias_name"
+				autocomplete="off"
+			/>
+			<span id="email_domain">@</span>
+		</div>
 		<button id="create_alias_btn">Create</button>
+		<p id="status" aria-live="polite"></p>
 	</body>
 </html>
