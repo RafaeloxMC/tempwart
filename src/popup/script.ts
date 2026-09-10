@@ -89,14 +89,14 @@ async function fetchExisting(rootDomain: string, email: string) {
 	const aliasesHTML = document.getElementById("aliases");
 
 	if (aliases.length == 0 && aliasesHTML != null) {
-		return (aliasesHTML.innerHTML += `<tr><td><input type="checkbox" /></td><td>No aliases yet.</td></tr>`);
+		return (aliasesHTML.innerHTML += `<tr><td><input type="checkbox" /></td><td>No aliases yet.</td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`);
 	}
 
 	if (aliasesHTML != null) {
 		for (const alias of aliases) {
 			console.log(alias);
 
-			aliasesHTML.innerHTML += `<tr><td><input type="checkbox" ${alias.enabled ? "checked" : ""}/></td><td><span>${alias.name}@${email.split("@")[1]}</span></td></tr>`;
+			aliasesHTML.innerHTML += `<tr><td><input type="checkbox" ${alias.enabled ? "checked" : ""}/></td><td><span>${alias.name}@${email.split("@")[1]}</span></td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`;
 		}
 	}
 }

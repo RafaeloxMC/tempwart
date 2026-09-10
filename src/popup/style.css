@@ -80,3 +80,13 @@ th {
 	align-items: center;
 	gap: 1vh;
 }
+
+.bin {
+	filter: invert() brightness(0.8) grayscale(100%);
+	transition: all;
+	transition-duration: 200ms;
+}
+
+.bin:hover {
+	filter: invert() brightness(1) grayscale(100%);
+}
