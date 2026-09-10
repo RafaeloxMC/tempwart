@@ -88,16 +88,16 @@ async function fetchExisting(rootDomain: string, email: string) {
 
 	const aliasesHTML = document.getElementById("aliases");
 
-	if (aliases.length == 0) {
-		if (aliasesHTML != null)
-			aliasesHTML.innerHTML = "<span>No aliases yet.</span>";
+	if (aliases.length == 0 && aliasesHTML != null) {
+		return (aliasesHTML.innerHTML += `<tr><td><input type="checkbox" /></td><td>No aliases yet.</td></tr>`);
 	}
 
-	for (const alias of aliases) {
-		console.log(alias);
+	if (aliasesHTML != null) {
+		for (const alias of aliases) {
+			console.log(alias);
 
-		if (aliasesHTML != null)
-			aliasesHTML.innerHTML += `<div><input type="checkbox" ${alias.enabled ? "checked" : ""}/><span>${alias.name}@${email.split("@")[1]}</span></div>`;
+			aliasesHTML.innerHTML += `<tr><td><input type="checkbox" ${alias.enabled ? "checked" : ""}/></td><td><span>${alias.name}@${email.split("@")[1]}</span></td></tr>`;
+		}
 	}
 }
 
