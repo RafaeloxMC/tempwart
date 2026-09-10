@@ -31,6 +31,7 @@ input {
 	border: none;
 	border-radius: 25px;
 	padding: 2vh;
+	width: 100%;
 }
 
 input:focus {
@@ -70,4 +71,12 @@ th {
 	font-size: small;
 	font-style: italic;
 	opacity: 50%;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 1vh;
 }
