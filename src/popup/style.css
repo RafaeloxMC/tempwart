@@ -1,6 +1,8 @@
 body {
 	width: 360px;
 	height: 620px;
+	max-width: 360px;
+	max-height: 620px;
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
@@ -31,7 +33,6 @@ input {
 	border: none;
 	border-radius: 25px;
 	padding: 2vh;
-	width: 100%;
 }
 
 input:focus {
@@ -89,4 +90,8 @@ th {
 
 .bin:hover {
 	filter: invert() brightness(1) grayscale(100%);
+}
+
+#alias_name {
+	width: 100%;
 }
