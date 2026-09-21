@@ -93,7 +93,7 @@ async function fetchExisting(rootDomain: string, email: string) {
 			console.log(alias);
 
 			const row = document.createElement("tr");
-			row.innerHTML = `<td><input type="checkbox" ${alias.enabled ? "checked" : ""}/></td><td><span>${alias.name}@${email.split("@")[1]}</span></td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`;
+			row.innerHTML = `<td><span>${alias.name}@${email.split("@")[1]}</span></td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`;
 
 			const bin = row.querySelector(".bin");
 			bin?.addEventListener("click", () =>
