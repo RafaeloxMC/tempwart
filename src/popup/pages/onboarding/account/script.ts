@@ -6,7 +6,7 @@ import {
 	setStalwartCurrentEmailId,
 } from "../../../scripts/util.js";
 import type {
-	IAccountFetchAllJmapResponse,
+	IJmapSessionAccount,
 	IJmapSessionResponse,
 } from "../../../types.js";
 
@@ -14,6 +14,7 @@ let accountId = "";
 
 let ids: string[] = [];
 let emails: string[] = [];
+let sessionAccounts: Record<string, IJmapSessionAccount> = {};
 
 async function select() {
 	const dropdownSelected = (
@@ -56,6 +57,7 @@ async function fetch_account_id() {
 
 	console.log(responseJson);
 
+	sessionAccounts = responseJson.accounts ?? {};
 	accountId = responseJson.primaryAccounts["urn:ietf:params:jmap:mail"];
 	console.log(`Found primary account ID "${accountId}"`);
 }
@@ -63,95 +65,23 @@ async function fetch_account_id() {
 async function fetch_all_accounts() {
 	if (!accountId) await fetch_account_id();
 
-	const rootDomain = await getStalwartApiUrl();
-	const authToken = await getStalwartApiKey();
+	ids = Object.keys(sessionAccounts);
 
-	const body = {
-		using: [
-			"urn:ietf:params:jmap:core",
-			"urn:stalwart:jmap",
-			"urn:ietf:params:jmap:blob",
-			"urn:ietf:params:jmap:mail",
-			"urn:ietf:params:jmap:calendars",
-			"urn:ietf:params:jmap:contacts",
-			"urn:ietf:params:jmap:principals",
-			"urn:ietf:params:jmap:sieve",
-			"urn:ietf:params:jmap:vacationresponse",
-		],
-		methodCalls: [
-			[
-				"x:Account/query",
-				{
-					accountId: accountId,
-					filter: { "@type": "User" },
-					limit: 25,
-					position: 0,
-					calculateTotal: true,
-				},
-				"0",
-			],
-			[
-				"x:Account/get",
-				{
-					accountId: accountId,
-					"#ids": {
-						resultOf: "0",
-						name: "x:Account/query",
-						path: "/ids",
-					},
-					properties: [
-						"id",
-						"emailAddress",
-						"description",
-						"createdAt",
-					],
-				},
-				"1",
-			],
-		],
-	};
+	if (ids.length == 0) {
+		throw Error("No accounts found in Stalwart session.");
+	}
 
-	const res = await fetch(`${rootDomain}/jmap/`, {
-		credentials: "include",
-		headers: {
-			"User-Agent": userAgent,
-			Accept: "*/*",
-			"Accept-Language": "en-US,en;q=0.9",
-			authorization: `Bearer ${authToken}`,
-			"content-type": "application/json",
-			"Sec-GPC": "1",
-			"Sec-Fetch-Dest": "empty",
-			"Sec-Fetch-Mode": "cors",
-			"Sec-Fetch-Site": "same-origin",
-			Priority: "u=4",
-		},
-		referrer: `${rootDomain}/account/Management/x:Account/User`,
-		body: JSON.stringify(body),
-		method: "POST",
-		mode: "cors",
-	});
-
-	const responseJson = (await res.json()) as IAccountFetchAllJmapResponse;
-	ids = responseJson.methodResponses[0][1].ids;
-
-	if (ids.length > 1) {
-		console.log("Select one of the following IDs:");
-		for (let i = 0; i < ids.length; i++) {
-			emails.push(
-				responseJson.methodResponses[1][1].list[i]?.emailAddress ?? "",
-			);
-			console.log(
-				`${i}: "${ids[i]}" - "${responseJson.methodResponses[1][1].list[i]?.emailAddress}"`,
-			);
-			const accounts = document.getElementById("accounts");
-			if (accounts != null)
-				accounts.innerHTML += `<option>${responseJson.methodResponses[1][1].list[i]?.emailAddress}</option>`;
-			else console.log("Accounts dropdown not found!");
-		}
-	} else if (ids.length == 0) {
-		throw Error("No accounts IDs found in Stalwart account.");
-	} else {
-		accountId = ids[0] ?? "";
+	console.log("Select one of the following IDs:");
+	for (let i = 0; i < ids.length; i++) {
+		const id = ids[i];
+		if (!id) continue;
+		const email = sessionAccounts[id]?.name ?? "";
+		emails.push(email);
+		console.log(`${i}: "${id}" - "${email}"`);
+		const accounts = document.getElementById("accounts");
+		if (accounts != null)
+			accounts.innerHTML += `<option>${email}</option>`;
+		else console.log("Accounts dropdown not found!");
 	}
 }
 
