@@ -32,4 +32,19 @@ bun install
 bun run dev
 ```
 
+## Compiling the extension
+
+Follow these simple steps to compile the extension:
+
+```bash
+bun run build
+
+# Firefox
+bunx web-ext lint --source-dir dist
+bunx web-ext build --source-dir dist --artifacts-dir web-ext-artifacts
+
+# For Chrome:
+cd dist && zip -r ../tempwart-chrome.zip .
+```
+
 A Firefox browser window will open with the extension already installed for you! To use it, open the pop-up window by clicking the puzzle icon in your browsers navigation bar (on the right side of the URL bar).
