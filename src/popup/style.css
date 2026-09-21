@@ -68,6 +68,10 @@ th {
 	background-color: rgb(40, 40, 40);
 }
 
+a {
+	color: rgb(150, 150, 150);
+}
+
 .hint {
 	font-size: small;
 	font-style: italic;
