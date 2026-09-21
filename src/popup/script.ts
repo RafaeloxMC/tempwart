@@ -82,22 +82,107 @@ async function fetchExisting(rootDomain: string, email: string) {
 	);
 	console.log(responseBody.methodResponses[0][1].list[0]?.aliases);
 
-	const aliases = Object.values(
+	const aliasEntries = Object.entries(
 		responseBody.methodResponses[0][1].list[0]?.aliases ?? {},
-	).filter((a) => a.description == "Created by TempWart");
+	).filter(([, alias]) => alias.description == "Created by TempWart");
 
 	const aliasesHTML = document.getElementById("aliases");
 
-	if (aliases.length == 0 && aliasesHTML != null) {
-		return (aliasesHTML.innerHTML += `<tr><td><input type="checkbox" /></td><td>No aliases yet.</td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`);
-	}
-
 	if (aliasesHTML != null) {
-		for (const alias of aliases) {
+		for (const [aliasId, alias] of aliasEntries) {
 			console.log(alias);
 
-			aliasesHTML.innerHTML += `<tr><td><input type="checkbox" ${alias.enabled ? "checked" : ""}/></td><td><span>${alias.name}@${email.split("@")[1]}</span></td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`;
+			const row = document.createElement("tr");
+			row.innerHTML = `<td><input type="checkbox" ${alias.enabled ? "checked" : ""}/></td><td><span>${alias.name}@${email.split("@")[1]}</span></td><td><img src="assets/bin.png" class="bin" alt="bin" width="16" height="16" /></td></tr>`;
+
+			const bin = row.querySelector(".bin");
+			bin?.addEventListener("click", () =>
+				handleDeleteClick(
+					rootDomain,
+					authToken,
+					accountId,
+					aliasId,
+					row,
+				),
+			);
+
+			aliasesHTML.appendChild(row);
 		}
+	}
+}
+
+async function handleDeleteClick(
+	rootDomain: string,
+	authToken: string,
+	accountId: string,
+	aliasId: string,
+	row: HTMLTableRowElement,
+) {
+	try {
+		await deleteAlias(rootDomain, authToken, accountId, aliasId);
+		row.remove();
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function deleteAlias(
+	rootDomain: string,
+	authToken: string,
+	accountId: string,
+	aliasId: string,
+) {
+	const body = {
+		using: ["urn:ietf:params:jmap:core", "urn:stalwart:jmap"],
+		methodCalls: [
+			[
+				"x:Account/set",
+				{
+					accountId,
+					update: {
+						[accountId]: {
+							[`aliases/${aliasId}`]: null,
+						},
+					},
+				},
+				"0",
+			],
+		],
+	};
+
+	const response = await fetch(`${rootDomain}/jmap/`, {
+		credentials: "include",
+		headers: {
+			Accept: "application/json",
+			authorization: `Bearer ${authToken}`,
+			"content-type": "application/json",
+		},
+		body: JSON.stringify(body),
+		method: "POST",
+	});
+	if (!response.ok)
+		throw Error(`Alias deletion request failed (${response.status}).`);
+
+	const responseJson = (await response.json()) as {
+		methodResponses?: [
+			string,
+			{ notUpdated?: Record<string, unknown> },
+			string,
+		][];
+	};
+	const methodResponse = responseJson.methodResponses?.[0];
+	if (methodResponse?.[0] !== "x:Account/set") {
+		const detail = methodResponse?.[1];
+		throw Error(
+			`Alias deletion was rejected${detail ? `: ${JSON.stringify(detail)}` : "."}`,
+		);
+	}
+
+	const notUpdated = methodResponse[1].notUpdated?.[accountId];
+	if (notUpdated != null) {
+		throw Error(
+			`Alias deletion was rejected: ${JSON.stringify(notUpdated)}`,
+		);
 	}
 }
 
